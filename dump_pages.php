@@ -16,14 +16,14 @@ define('TRANSFORM_DIR', 'transformed_pages/');
 define('TRANSFORM_TYPE', 'markdown');
 define('TRANSFORM_FILE_EXTENSION', 'md');
 define('PANDOC_PATH', 'C:\\Users\\baran1\\AppData\\Local\Pandoc\\');  // pandoc executable path
-
+define('PANDOC_OPTIONS',' --no-wrap ');  // pandoc options. (no-wrap;normalize;...)
 // end Configuration =====================
 
 
 try {
 	$dns = 'mysql:host='.DB_HOST.';dbname='.DB_NAME;
 	$db = new PDO($dns,DB_USER,DB_PASSWORD);
-	$sql = "select * from mw_page";
+	$sql = "select * from mw_page where page_namespace = 0";
 	
 	$pages = $db->query($sql);
 	foreach ( $pages as $page ) {
@@ -48,8 +48,8 @@ try {
 					echo 'Page extracted: '.$page["page_title"].'</BR>';
 					if (TRANSFORM) {
 						if (!is_dir(TRANSFORM_DIR)) mkdir(TRANSFORM_DIR, 0700,true);
-						$pandoc_exec = PANDOC_PATH.'pandoc --from=mediawiki --to='.TRANSFORM_TYPE.' --output='.TRANSFORM_DIR.''.$page["page_title"].'.'.TRANSFORM_FILE_EXTENSION.' '.DUMP_DIR.$page["page_title"].'.mw';
-
+						//$pandoc_exec = PANDOC_PATH.'pandoc --from=mediawiki --to='.TRANSFORM_TYPE.' --output='.TRANSFORM_DIR.''.$page["page_title"].'.'.TRANSFORM_FILE_EXTENSION.' '.DUMP_DIR.$page["page_title"].'.mw';
+						$pandoc_exec = PANDOC_PATH.'pandoc '.PANDOC_OPTIONS.' --from=mediawiki --to='.TRANSFORM_TYPE.' --output='.TRANSFORM_DIR.''.$page["page_title"].'.'.TRANSFORM_FILE_EXTENSION.' '.DUMP_DIR.$page["page_title"].'.mw';
 						system($pandoc_exec);
 						echo 'Page transformed: '.$page["page_title"].'</BR>';
 					}
